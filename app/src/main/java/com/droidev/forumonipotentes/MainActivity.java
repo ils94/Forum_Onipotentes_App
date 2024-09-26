@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -31,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private Menu menu;
     private boolean doubleBackToExitPressedOnce = false;
     private final Handler exitHandler = new Handler();
-    String userAgent = System.getProperty("http.agent");
+    private final String userAgent = System.getProperty("http.agent");
+
+    private ValueCallback<Uri[]> filePathCallback;
+    private final static int FILE_CHOOSER_REQUEST_CODE = 1;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -76,18 +81,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("https://forum.onipotentes.club/")) {
-                    return false;
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(intent);
-                    return true;
-                }
-            }
-
-            @Override
-            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setVisibility(ProgressBar.VISIBLE);
             }
@@ -96,14 +90,53 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(ProgressBar.GONE);
-
                 updateNavigationButtons();
             }
         });
 
-        progressBar.setVisibility(ProgressBar.VISIBLE);
+        webView.setWebChromeClient(new WebChromeClient() {
 
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                if (MainActivity.this.filePathCallback != null) {
+                    MainActivity.this.filePathCallback.onReceiveValue(null);
+                }
+                MainActivity.this.filePathCallback = filePathCallback;
+
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+                startActivityForResult(Intent.createChooser(intent, "File Chooser"), FILE_CHOOSER_REQUEST_CODE);
+
+                return true;
+            }
+        });
+
+        progressBar.setVisibility(ProgressBar.VISIBLE);
         webView.loadUrl(HOME_URL);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FILE_CHOOSER_REQUEST_CODE && resultCode == RESULT_OK) {
+            Uri[] results = null;
+
+            if (data != null && data.getData() != null) {
+                results = new Uri[]{data.getData()};
+            }
+
+            if (filePathCallback != null) {
+                filePathCallback.onReceiveValue(results);
+                filePathCallback = null;
+            }
+        } else {
+            if (filePathCallback != null) {
+                filePathCallback.onReceiveValue(null);
+                filePathCallback = null;
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
