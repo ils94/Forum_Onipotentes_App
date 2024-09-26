@@ -2,9 +2,9 @@ package com.droidev.forumonipotentes;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,6 +27,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -149,6 +150,12 @@ public class MainActivity extends AppCompatActivity {
 
         progressBar.setVisibility(ProgressBar.VISIBLE);
         webView.loadUrl(HOME_URL);
+
+        if (savedInstanceState != null) {
+            webView.restoreState(savedInstanceState);
+        } else {
+            webView.loadUrl(HOME_URL);
+        }
     }
 
     @Override
@@ -308,5 +315,15 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        webView.saveState(outState);
+    }
 
 }
