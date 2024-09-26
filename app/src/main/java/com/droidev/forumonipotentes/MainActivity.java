@@ -226,10 +226,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_favorite) {
-            String currentUrl = webView.getUrl();
             String currentTitle = currentPageTitle;
-            saveFavorite(currentTitle, currentUrl);
-            Toast.makeText(this, "Página salva como favorito!", Toast.LENGTH_SHORT).show();
+            String currentUrl = webView.getUrl();
+            showSaveFavoritesDialog(currentTitle, currentUrl);
             return true;
         }
 
@@ -274,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(title, url);
         editor.apply();
         loadFavorites();
+        Toast.makeText(this, "Página salva como favorito!", Toast.LENGTH_SHORT).show();
     }
 
     private void loadFavorites() {
@@ -310,6 +310,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         builder.setNegativeButton("Não", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showSaveFavoritesDialog(String currentTitle, String currentUrl) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Salvar Favorito");
+        builder.setMessage("Salvar está página como favorito?");
+
+        builder.setPositiveButton("Sim", (dialog, which) -> {
+            saveFavorite(currentTitle, currentUrl);
+        });
 
         AlertDialog dialog = builder.create();
         dialog.show();
