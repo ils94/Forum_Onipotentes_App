@@ -320,9 +320,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Salvar Favorito");
         builder.setMessage("Salvar está página como favorito?");
 
-        builder.setPositiveButton("Sim", (dialog, which) -> {
-            saveFavorite(currentTitle, currentUrl);
-        });
+        builder.setPositiveButton("Sim", (dialog, which) -> saveFavorite(currentTitle, currentUrl));
 
         AlertDialog dialog = builder.create();
         dialog.show();
