@@ -3,6 +3,7 @@ package com.droidev.forumonipotentes;
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,6 +28,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.navigation.NavigationView;
+
+import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,11 +46,21 @@ public class MainActivity extends AppCompatActivity {
     private ValueCallback<Uri[]> filePathCallback;
     private final static int FILE_CHOOSER_REQUEST_CODE = 1;
 
+    private SharedPreferences sharedPreferences;
+    private NavigationView navigationView;
+    private String currentPageTitle = "";
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences("Favorites", MODE_PRIVATE);
+
+        navigationView = findViewById(R.id.navigation_view);
+
+        loadFavorites();
 
         setTitle("");
 
@@ -93,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(ProgressBar.GONE);
+                currentPageTitle = view.getTitle();  // Get the page title
                 updateNavigationButtons();
             }
         });
@@ -196,6 +211,14 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.action_favorite) {
+            String currentUrl = webView.getUrl();
+            String currentTitle = currentPageTitle;
+            saveFavorite(currentTitle, currentUrl);
+            Toast.makeText(this, "Page saved as favorite!", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -230,5 +253,27 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), drawableRes);
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 96, 96, true);
         return new BitmapDrawable(getResources(), scaledBitmap);
+    }
+
+    private void saveFavorite(String title, String url) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(title, url);
+        editor.apply();
+        loadFavorites();
+    }
+
+    private void loadFavorites() {
+        Menu menu = navigationView.getMenu();
+        menu.clear();
+        Map<String, ?> allFavorites = sharedPreferences.getAll();
+        for (Map.Entry<String, ?> entry : allFavorites.entrySet()) {
+            String title = entry.getKey();
+            String url = entry.getValue().toString();
+
+            menu.add(title).setOnMenuItemClickListener(menuItem -> {
+                webView.loadUrl(url);
+                return true;
+            });
+        }
     }
 }
