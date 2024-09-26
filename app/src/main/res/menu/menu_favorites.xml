@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/favorite_empty"
-            android:title="No favorites yet"
+            android:title="Sem favoritos"
             android:visible="true"
             tools:ignore="HardcodedText" />
     </group>

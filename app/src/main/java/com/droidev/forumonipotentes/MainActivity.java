@@ -2,6 +2,7 @@ package com.droidev.forumonipotentes;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -26,6 +27,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.navigation.NavigationView;
@@ -135,13 +137,13 @@ public class MainActivity extends AppCompatActivity {
             request.setMimeType(mimeType);
             String cookies = CookieManager.getInstance().getCookie(url);
             request.addRequestHeader("cookie", cookies);
-            request.setDescription("Downloading file...");
+            request.setDescription("Baixando arquivo...");
             request.allowScanningByMediaScanner();
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(url, contentDisposition, mimeType));
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             dm.enqueue(request);
-            Toast.makeText(getApplicationContext(), "Downloading File...", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Baixando arquivo...", Toast.LENGTH_LONG).show();
 
         });
 
@@ -183,6 +185,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if (id == R.id.clear_favorites) {
+            showClearFavoritesDialog();
+            return true;
+        }
+
         if (id == R.id.action_home) {
             progressBar.setVisibility(ProgressBar.VISIBLE);
             webView.loadUrl(HOME_URL);
@@ -215,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
             String currentUrl = webView.getUrl();
             String currentTitle = currentPageTitle;
             saveFavorite(currentTitle, currentUrl);
-            Toast.makeText(this, "Page saved as favorite!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Página salva como favorito!", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -243,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Pressione voltar novamente para sair.", Toast.LENGTH_SHORT).show();
 
             exitHandler.postDelayed(() -> doubleBackToExitPressedOnce = false, 3000);
         }
@@ -276,4 +283,30 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+    private void clearFavorites() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+        loadFavorites();
+    }
+
+    private void showClearFavoritesDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Limpar Favoritos");
+        builder.setCancelable(false);
+        builder.setMessage("Tem certeza que deseja deletar todos os favoritos?");
+
+        builder.setPositiveButton("Sim", (dialog, which) -> {
+            clearFavorites();
+            Toast.makeText(MainActivity.this, "Todos os favoritos foram deletados!", Toast.LENGTH_SHORT).show();
+        });
+
+        builder.setNegativeButton("Não", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
 }

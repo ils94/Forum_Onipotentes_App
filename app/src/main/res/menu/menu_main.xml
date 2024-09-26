@@ -4,28 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/clear_favorites"
+        android:icon="@drawable/favorite"
+        android:title="Limpar favoritos"
+        tools:ignore="AlwaysShowAction,HardcodedText" />
+
+    <item
         android:id="@+id/action_favorite"
         android:icon="@drawable/favorite"
-        android:title="Save as Favorite"
+        android:title="Salvar como favorito"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction,HardcodedText" />
 
     <item
         android:id="@+id/action_back"
         android:icon="@drawable/back"
-        android:title="Back"
+        android:title="Voltar"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction,HardcodedText" />
     <item
         android:id="@+id/action_forward"
         android:icon="@drawable/forward"
-        android:title="Foward"
+        android:title="Avançar"
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/refresh"
-        android:title="Refresh"
+        android:title="Recarregar"
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
     <item
