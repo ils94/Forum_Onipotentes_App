@@ -59,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setTitle("");
+
         sharedPreferences = getSharedPreferences("Favorites", MODE_PRIVATE);
 
         navigationView = findViewById(R.id.navigation_view);
 
         loadFavorites();
-
-        setTitle("");
 
         Drawable scaledDrawable = redimensionarIcone(R.drawable.pepe);
         Objects.requireNonNull(getSupportActionBar()).setHomeAsUpIndicator(scaledDrawable);
@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showClearFavoritesDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Limpar Favoritos");
+        builder.setTitle("Deletar Favoritos");
         builder.setCancelable(false);
         builder.setMessage("Tem certeza que deseja deletar todos os favoritos?");
 
@@ -318,8 +318,7 @@ public class MainActivity extends AppCompatActivity {
     private void showSaveFavoritesDialog(String currentTitle, String currentUrl) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Salvar Favorito");
-        builder.setMessage("Salvar está página como favorito?");
-
+        builder.setMessage("Salvar a página abaixo como favorito?\n\n" + currentTitle);
         builder.setPositiveButton("Sim", (dialog, which) -> saveFavorite(currentTitle, currentUrl));
 
         AlertDialog dialog = builder.create();
