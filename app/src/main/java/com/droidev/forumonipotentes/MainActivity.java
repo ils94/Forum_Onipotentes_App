@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(ProgressBar.GONE);
-                currentPageTitle = view.getTitle();  // Get the page title
+                currentPageTitle = view.getTitle();
                 updateNavigationButtons();
             }
         });
@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        progressBar.setVisibility(ProgressBar.VISIBLE);
         webView.loadUrl(HOME_URL);
 
         if (savedInstanceState != null) {
@@ -198,20 +197,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_home) {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
             webView.loadUrl(HOME_URL);
             return true;
         }
 
         if (id == R.id.action_refresh) {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
             webView.reload();
             return true;
         }
 
         if (id == R.id.action_back) {
             if (webView.canGoBack()) {
-                progressBar.setVisibility(ProgressBar.VISIBLE);
                 webView.goBack();
             }
             return true;
@@ -219,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_forward) {
             if (webView.canGoForward()) {
-                progressBar.setVisibility(ProgressBar.VISIBLE);
                 webView.goForward();
             }
             return true;
